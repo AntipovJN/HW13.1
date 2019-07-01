@@ -1,6 +1,5 @@
 import java.io.*;
-import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,13 +18,13 @@ public class App {
         }
         oos.flush();
         oos.close();
-        for(Animal animal : deserializeAnimalArray(bai.toByteArray())){
+        for (Animal animal : deserializeAnimalArray(bai.toByteArray())) {
             System.out.println(animal.toString());
         }
-            
-        Comparator comparator = ( a,  b) -> ((a.equals(b) ? 0: (a.hashCode() <  b.hashCode()) ? -1 : 1));
-        Stream stream = Stream.of("cat","dog has biggest hash","Y?","It's impossible");
-        BiConsumer minMaxConsumer = (s1, s2) -> System.out.println( s1 + " " + s2);
+
+        Comparator comparator = (a, b) -> ((a.equals(b) ? 0 : (a.hashCode() < b.hashCode()) ? -1 : 1));
+        Stream stream = Stream.of("cat", "dog has biggest hash", "Y?", "It's impossible");
+        BiConsumer minMaxConsumer = (s1, s2) -> System.out.println(s1 + " " + s2);
         findMinMax(stream, comparator, minMaxConsumer);
     }
 
@@ -33,15 +32,15 @@ public class App {
             Stream<? extends T> stream,
             Comparator<? super T> order,
             BiConsumer<? super T, ? super T> minMaxConsumer) {
-        LinkedList<T> list = new LinkedList<>(stream.sorted(order).collect(Collectors.toList()));
+        List<T> list = stream.collect(Collectors.toCollection(ArrayList::new));
         if (!list.isEmpty()) {
-              minMaxConsumer.accept(list.getFirst(), list.getLast());
+            minMaxConsumer.accept(Collections.min(list, order), Collections.max(list, order));
         } else {
             minMaxConsumer.accept(null, null);
         }
     }
 
-     public static Animal[] deserializeAnimalArray(byte[] data) {
+    public static Animal[] deserializeAnimalArray(byte[] data) {
         ByteArrayInputStream inputByteArrayStream = new ByteArrayInputStream(data);
         Animal[] array;
         try {
